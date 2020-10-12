@@ -8,8 +8,10 @@ _obj
 _test
 .idea
 .vscode
+static/plug
+conf
 
 *.exe
+*.exe~
 *.test
 *.prof
-
