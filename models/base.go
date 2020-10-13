@@ -17,7 +17,7 @@ func Init() {
 	}
 	dsn := dbuser + ":" + dbpassword + "@tcp(" + dbhost + ":" + dbport + ")/" + dbname + "?charset=utf8&loc=Asia%2FShanghai"
 	orm.RegisterDataBase("default", "mysql", dsn)
-	orm.RegisterModel(new(User))
+	orm.RegisterModel(new(User), new(Food))
 }
 
 //返回带前缀的表名

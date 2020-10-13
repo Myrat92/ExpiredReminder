@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>table模块快速使用</title>
+    <link rel="stylesheet" href="/static/plug/layui/css/layui.css">
+</head>
+<body>
+
+<table id="demo"></table>
+
+<script type="text/javascript" src="/static/plug/layui/layui.js"></script>
+<script>
+    layui.use(['util','table'], function(){
+        var table = layui.table;
+        var util = layui.util;
+
+        //第一个实例
+        table.render({
+            elem: '#demo'
+            ,height: 312
+            ,url: '/food/list/' //数据接口
+            ,page: true //开启分页
+            ,cols: [[ //表头
+                {field:'Name', width: '15%', minWidth: 100, title: '名称'}
+                ,{field:'Count', width:80, title: '数量', sort: true}
+                ,{field:'RemainingTime', width:120, title: '剩余日期/天', sort: true}
+                ,{field:'ProductionDate', width:80, title: '生产日期', width: '15%', minWidth: 150, sort:true,
+                    templet:function(d){return util.toDateString(d.ProductionDate, "yyyy-MM-dd");}}
+                ,{field:'ExpiredDate', title: '有效期至', width: '15%', minWidth: 150, sort:true,
+                    templet:function(d){return util.toDateString(d.ExpiredDate, "yyyy-MM-dd");}} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                ,{field:'Created', title: '创建时间', width: '15%', minWidth: 150, sort:true,
+                    templet:function(d){return util.toDateString(d.Created, "yyyy-MM-dd");}}
+                ,{field:'Updated', title: '修改时间', width: '15%', minWidth: 150, sort:true,
+                    templet:function(d){return util.toDateString(d.Updated, "yyyy-MM-dd");}}
+            ]]
+        });
+    });
+</script>
+</body>
+</html>
