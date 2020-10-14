@@ -3,7 +3,8 @@ package controllers
 import (
 	"ExpiredReminder/models"
 	"github.com/astaxie/beego/logs"
-	"strconv"
+	"github.com/astaxie/beego/orm"
+	"math"
 	"time"
 )
 
@@ -14,24 +15,26 @@ type FoodController struct {
 func (c *FoodController) Logging() {
 	if c.Ctx.Request.Method == "POST" {
 		name := c.GetString("name")
-		count := c.GetString("count")
+		count, _ := c.GetInt("count")
 		productionDate := c.GetString("production-date")
 		expiredDate := c.GetString("expired-date")
 		comment := c.GetString("comment")
 
+		productionDateTime, _ := time.Parse("2006-01-02", productionDate)
+		expiredDateTime, _ := time.Parse("2006-01-02", expiredDate)
 
-
-		countInt, err := strconv.Atoi(count)
+		num, err := c.o.QueryTable(models.Food{}).Filter("Name", name).Filter("ProductionDate", productionDateTime).
+			Filter("ExpiredDate", expiredDateTime).Update(orm.Params{"Count": count+1, "Updated": time.Now()})
 		if err != nil {
-			logs.Error("Trans food's count error: %v", err)
+			logs.Error("Query same food err: %v", err)
 		}
 
-		productionDateTime, err := time.Parse("2006-01-02", productionDate)
-		expiredDateTime, err := time.Parse("2006-01-02", expiredDate)
-
-		remainingTime := expiredDateTime.Sub(productionDateTime)
-
-		c.o.Insert(&models.Food{Name: name, Count: countInt, ProductionDate: productionDateTime, ExpiredDate: expiredDateTime, Comment: comment, RemainingTime: remainingTime.Hours()/24})
+		if num == 0 {
+			remainingTime := expiredDateTime.Sub(time.Now())
+			c.o.Insert(&models.Food{Name: name, Count: count, ProductionDate: productionDateTime,
+				ExpiredDate: expiredDateTime, Comment: comment, RemainingTime: math.Ceil(remainingTime.Hours()/24),
+				Status: 0, Created: time.Now(), Updated: time.Now()})
+		}
 	}
 
 	c.TplName = c.controllerName + "/logging.html"
@@ -41,7 +44,6 @@ func (c *FoodController) List() {
 	var foods []*models.Food
 	nums, _ := c.o.QueryTable(models.Food{}).All(&foods)
 
-	logs.Debug(foods)
 	c.Data["json"] = map[string]interface{}{
 		"code": 0,
 		"msg": "",

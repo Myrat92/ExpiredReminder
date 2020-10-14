@@ -1,6 +1,9 @@
 package models
 
-import "time"
+import (
+	"github.com/astaxie/beego/orm"
+	"time"
+)
 
 type Food struct {
 	Id int ``
@@ -12,12 +15,17 @@ type Food struct {
 	Comment string
 	Created time.Time
 	Updated time.Time
+	Status int
 }
 
 func (m *Food) TableName() string {
 	return TableName("food")
 }
 
-//func (m *Food) GetAllFoods() ([]*Food, int) {
-//
-//}
+func (m *Food) GetAllFoods() ([]*Food, int64) {
+	o := orm.NewOrm()
+
+	var foods []*Food
+	nums, _ := o.QueryTable(Food{}).All(&foods)
+	return foods, nums
+}

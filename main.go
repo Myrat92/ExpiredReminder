@@ -3,6 +3,7 @@ package main
 import (
 	"ExpiredReminder/models"
 	_ "ExpiredReminder/routers"
+	"ExpiredReminder/task"
 	"github.com/astaxie/beego"
 )
 
@@ -12,6 +13,7 @@ func init() {
 }
 
 func main() {
+	go task.Run()
 	beego.Run()
 }
 
