@@ -4,13 +4,14 @@
     <meta charset="utf-8">
     <title>table模块快速使用</title>
     <link rel="stylesheet" href="/static/plug/layui/css/layui.css" media="all">
+    <script src="https://s3.pstatp.com/cdn/expire-1-M/jquery/3.3.1/jquery.min.js"></script>
 </head>
 <body>
 
 <table class="layui-hide" id="view" lay-filter="view"></table>
 
 <script type="text/html" id="barOperation">
-    <a class="layui-btn layui-btn-xs" lay-event="edit">-1</a>
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑数量</a>
     <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
 </script>
 
@@ -51,20 +52,54 @@
             var data = obj.data;
             //console.log(obj)
             if(obj.event === 'del'){
-                layer.confirm('真的删除行么', function(index){
-                    obj.del();
+                layer.confirm('确定删除?', function(index){
+                    $.ajax({
+                        url: "/food/operate",
+                        type: "POST",
+                        data:{"methodName":"del", "id":data.Id},
+                        dataType: "json",
+                        success: function(data){
+                            if(data.status==1){
+                                //删除这一行
+                                obj.del();
+                                //关闭弹框
+                                layer.close(index);
+                                layer.msg("删除成功", {icon: 6});
+                            }else{
+                                layer.msg("删除失败", {icon: 5});
+                            }
+                        }
 
+                    });
+                    obj.del();
                     layer.close(index);
                 });
             } else if(obj.event === 'edit'){
                 layer.prompt({
-                    formType: 2
-                    ,value: data.email
+                    formType: 0
+                    ,value: data.Count
                 }, function(value, index){
-                    obj.update({
-                        email: value
+                    $.ajax({
+                        url: "/food/operate",
+                        type: "POST",
+                        data:{"methodName":"edit", "id":data.Id, "count":value},
+                        dataType: "json",
+                        success: function(data){
+                            if(data.status==1){
+                                //修改该行数量
+                                obj.update({
+                                    Count: value
+                                });
+                                layer.close(index);
+                                layer.msg("删除成功", {icon: 6});
+                            }else{
+                                layer.msg("删除失败", {icon: 5});
+                            }
+                        }
+
                     });
-                    layer.close(index);
+
+
                 });
             }
         });

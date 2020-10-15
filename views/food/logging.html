@@ -47,7 +47,7 @@
         </div>
     </div>
     <div class="layui-form-item">
-        <button class="layui-btn" lay-submit="" lay-filter="demo2">提交</button>
+        <button class="layui-btn" lay-submit="" lay-filter="submit">提交</button>
     </div>
 </form>
 
@@ -67,14 +67,17 @@
             elem: '#expired-date'
         });
 
-        // //监听提交
-        // form.on('submit(demo1)', function(data){
-        //     // layer.alert(JSON.stringify(data.field), {
-        //     //     title: '最终的提交信息'
-        //     // })
-        //     layer.alert("Deded")
-        //     return false;
-        // });
+        //监听提交
+        form.on('submit(submit)', function(data){
+            layer.confirm('继续录入？', {
+                btn: ['继续','查看记录'] //按钮
+            }, function(){
+                layer.closeAll()
+            }, function(){
+                window.location.href="/food/view"
+            });
+            return false
+        });
     });
 </script>
 </body>

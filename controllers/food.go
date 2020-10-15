@@ -4,6 +4,7 @@ import (
 	"ExpiredReminder/models"
 	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
+	"log"
 	"math"
 	"time"
 )
@@ -42,7 +43,7 @@ func (c *FoodController) Logging() {
 
 func (c *FoodController) List() {
 	var foods []*models.Food
-	nums, _ := c.o.QueryTable(models.Food{}).All(&foods)
+	nums, _ := c.o.QueryTable(models.Food{}).Filter("Status", 0).Filter("count__gt", 0).All(&foods)
 
 	c.Data["json"] = map[string]interface{}{
 		"code": 0,
@@ -55,4 +56,27 @@ func (c *FoodController) List() {
 
 func (c *FoodController) View() {
 	c.TplName = c.controllerName + "/view.html"
+}
+
+func (c *FoodController) Operate() {
+	log.Println(c.Input())
+	id := c.GetString("id")
+	methodName := c.GetString("methodName")
+	count, err := c.GetInt("count")
+	if err != nil {
+		logs.Error("count trans int error: %v", err)
+	}
+
+	if methodName == "del" {
+		c.o.QueryTable(models.Food{}).Filter("ID", id).Update(orm.Params{"Status":1, "Updated":time.Now()})
+	}
+
+	if methodName == "edit" {
+		c.o.QueryTable(models.Food{}).Filter("ID", id).Update(orm.Params{"Count":count, "Updated":time.Now()})
+	}
+
+	c.Data["json"] = map[string]interface{}{
+		"status":1,
+	}
+	c.ServeJSON()
 }
