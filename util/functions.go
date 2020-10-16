@@ -1,8 +1,11 @@
 package util
 
 import (
+	"bytes"
 	"crypto/md5"
+	"encoding/json"
 	"fmt"
+	"net/http"
 	"strings"
 	"net/url"
 	"encoding/base64"
@@ -28,4 +31,41 @@ func UniqueId() string {
 		return ""
 	}
 	return Md5(base64.URLEncoding.EncodeToString(b))
+}
+
+func HttpGetJson(url string) (map[string]interface{}, error) {
+	resp, err := http.Get(url)
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var data map[string]interface{}
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+
+	return data, nil
+}
+
+func HttpPostJson(url string, data map[string]interface{}) (map[string]interface{}, error) {
+	jsonData, err := json.Marshal(data)
+	if err != nil {
+		return nil, err
+	}
+
+	resp, err := http.Post(url, "application/json", bytes.NewReader(jsonData))
+	if err != nil {
+		return nil, err
+	}
+	defer resp.Body.Close()
+
+	var res map[string]interface{}
+	err = json.NewDecoder(resp.Body).Decode(&data)
+	if err != nil {
+		return nil, err
+	}
+
+	return res, nil
 }
