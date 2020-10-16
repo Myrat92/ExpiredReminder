@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8">
+    <title>table模块快速使用</title>
+    <link rel="stylesheet" href="/static/plug/layui/css/layui.css" media="all">
+    <script src="https://s3.pstatp.com/cdn/expire-1-M/jquery/3.3.1/jquery.min.js"></script>
+</head>
+<body>
+
+<table class="layui-hide" id="view" lay-filter="view"></table>
+
+<script type="text/html" id="barOperation">
+    <a class="layui-btn layui-btn-xs" lay-event="edit">编辑数量</a>
+    <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+
+<script type="text/javascript" src="/static/plug/layui/layui.js"></script>
+<script>
+    layui.use(['util','table'], function(){
+        var table = layui.table;
+        var util = layui.util;
+
+        //第一个实例
+        table.render({
+            elem: '#view'
+            ,height: 312
+            ,url: '/food/list/' //数据接口
+            ,page: true //开启分页
+            ,cols: [[ //表头
+                {field:'Name', width: '15%', minWidth: 100, title: '名称'}
+                ,{field:'Count', width:80, title: '数量', sort: true}
+                ,{field:'RemainingTime', width:120, title: '剩余日期/天', sort: true}
+                ,{field:'ProductionDate', width:80, title: '生产日期', width: '15%', minWidth: 150, sort:true,
+                    templet:function(d){return util.toDateString(d.ProductionDate, "yyyy-MM-dd");}}
+                ,{field:'ExpiredDate', title: '有效期至', width: '15%', minWidth: 150, sort:true,
+                    templet:function(d){return util.toDateString(d.ExpiredDate, "yyyy-MM-dd");}} //minWidth：局部定义当前单元格的最小宽度，layui 2.2.1 新增
+                ,{field:'Created', title: '创建时间', width: '15%', minWidth: 150, sort:true,
+                    templet:function(d){return util.toDateString(d.Created, "yyyy-MM-dd");}}
+                ,{field:'Updated', title: '修改时间', width: '15%', minWidth: 150, sort:true,
+                    templet:function(d){return util.toDateString(d.Updated, "yyyy-MM-dd");}}
+                ,{fixed: 'right', title:'操作', toolbar: '#barOperation', width:150}
+            ]]
+            ,initSort: {
+                field: 'RemainingTime' //排序字段，对应 cols 设定的各字段名
+                ,type: 'asc' //排序方式  asc: 升序、desc: 降序、null: 默认排序
+            }
+        });
+
+        //监听行工具事件
+        table.on('tool(view)', function(obj){
+            var data = obj.data;
+            //console.log(obj)
+            if(obj.event === 'del'){
+                layer.confirm('确定删除?', function(index){
+                    $.ajax({
+                        url: "/food/operate",
+                        type: "POST",
+                        data:{"methodName":"del", "id":data.Id},
+                        dataType: "json",
+                        success: function(data){
+                            if(data.status==1){
+                                //删除这一行
+                                obj.del();
+                                //关闭弹框
+                                layer.close(index);
+                                layer.msg("删除成功", {icon: 6});
+                            }else{
+                                layer.msg("删除失败", {icon: 5});
+                            }
+                        }
+
+                    });
+                    obj.del();
+                    layer.close(index);
+                });
+            } else if(obj.event === 'edit'){
+                layer.prompt({
+                    formType: 0
+                    ,value: data.Count
+                }, function(value, index){
+                    $.ajax({
+                        url: "/food/operate",
+                        type: "POST",
+                        data:{"methodName":"edit", "id":data.Id, "count":value},
+                        dataType: "json",
+                        success: function(data){
+                            if(data.status==1){
+                                //修改该行数量
+                                obj.update({
+                                    Count: value
+                                });
+                                layer.close(index);
+                                layer.msg("删除成功", {icon: 6});
+                            }else{
+                                layer.msg("删除失败", {icon: 5});
+                            }
+                        }
+
+                    });
+
+
+                });
+            }
+        });
+
+    });
+</script>
+</body>
+</html>
