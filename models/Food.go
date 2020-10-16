@@ -22,7 +22,7 @@ func (m *Food) TableName() string {
 	return TableName("food")
 }
 
-func (m *Food) GetAllFoods() ([]*Food, int64) {
+func GetAllFoods() ([]*Food, int64) {
 	o := orm.NewOrm()
 
 	var foods []*Food

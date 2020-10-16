@@ -14,6 +14,10 @@ type FoodController struct {
 }
 
 func (c *FoodController) Logging() {
+	c.TplName = c.controllerName + "/logging.html"
+}
+
+func (c *FoodController) Update() {
 	if c.Ctx.Request.Method == "POST" {
 		name := c.GetString("name")
 		count, _ := c.GetInt("count")
@@ -36,9 +40,13 @@ func (c *FoodController) Logging() {
 				ExpiredDate: expiredDateTime, Comment: comment, RemainingTime: math.Ceil(remainingTime.Hours()/24),
 				Status: 0, Created: time.Now(), Updated: time.Now()})
 		}
-	}
 
-	c.TplName = c.controllerName + "/logging.html"
+		c.Data["json"] = map[string]interface{}{
+			"code": 0,
+		}
+
+		c.ServeJSON()
+	}
 }
 
 func (c *FoodController) List() {

@@ -3,7 +3,7 @@ package main
 import (
 	"ExpiredReminder/models"
 	_ "ExpiredReminder/routers"
-	"ExpiredReminder/task"
+	"ExpiredReminder/src/task"
 	"github.com/astaxie/beego"
 )
 
