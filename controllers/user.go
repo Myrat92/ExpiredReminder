@@ -2,7 +2,7 @@ package controllers
 
 import (
 	"ExpiredReminder/models"
-	"github.com/Echosong/beego_blog/util"
+	"ExpiredReminder/util"
 	"strings"
 )
 

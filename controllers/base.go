@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"github.com/astaxie/beego"
-	"github.com/astaxie/beego/logs"
 	"github.com/astaxie/beego/orm"
 	"strings"
 )
@@ -19,8 +18,6 @@ func (p *baseController) Prepare()  {
 	p.controllerName = strings.ToLower(controllerName[0 : len(controllerName)-10])
 	p.actionName = strings.ToLower(actionName)
 	p.o = orm.NewOrm();
-	logs.Info("dedede")
-	logs.Info(p.actionName)
 	if strings.ToLower(p.actionName)  !=  "login"{
 		if p.GetSession("user") == nil{
 			p.History("未登录","/user/login")
