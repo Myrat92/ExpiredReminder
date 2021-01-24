@@ -13,33 +13,37 @@ import (
 
 const MIN = 0.000001
 
+func IsEqual(f1, f2, p float64) bool {
+	return math.Dim(math.Abs(f1-f2), p) == 0
+}
+
 func notificationEveryDay() error {
 	foods, _ := models.GetAllFoods()
 	expiredData := make(map[string]float64)
 
 	for _, food := range foods {
-		if math.Dim(food.RemainingTime, 365) < MIN {
+		if IsEqual(food.RemainingTime, 365, MIN) {
 			expiredData[food.Name] = 365
 		}
-		if math.Dim(food.RemainingTime, 180) < MIN {
+		if IsEqual(food.RemainingTime, 180, MIN) {
 			expiredData[food.Name] = 180
 		}
-		if math.Dim(food.RemainingTime, 90) < MIN {
+		if IsEqual(food.RemainingTime, 90, MIN) {
 			expiredData[food.Name] = 90
 		}
-		if math.Dim(food.RemainingTime, 30) < MIN {
+		if IsEqual(food.RemainingTime, 30, MIN) {
 			expiredData[food.Name] = 30
 		}
-		if math.Dim(food.RemainingTime, 15) < MIN {
+		if IsEqual(food.RemainingTime, 15, MIN) {
 			expiredData[food.Name] = 15
 		}
-		if math.Dim(food.RemainingTime, 7) < MIN {
+		if IsEqual(food.RemainingTime, 7, MIN) {
 			expiredData[food.Name] = 7
 		}
-		if math.Dim(food.RemainingTime, 3) < MIN {
+		if IsEqual(food.RemainingTime, 3, MIN) {
 			expiredData[food.Name] = 3
 		}
-		if math.Dim(food.RemainingTime, 1) < MIN {
+		if IsEqual(food.RemainingTime, 1, MIN) {
 			expiredData[food.Name] = 1
 		}
 	}
