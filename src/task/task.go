@@ -49,12 +49,16 @@ func notificationEveryDay() error {
 	}
 
 	msg := "有如下物品即将过期：\r\n"
-	for k,v := range expiredData {
-		remainingTime := strconv.Itoa(int(v))
-		msg = msg + k + ":剩余" + remainingTime + "天.\r\n"
+
+	if len(expiredData) > 0 {
+		for k,v := range expiredData {
+			remainingTime := strconv.Itoa(int(v))
+			msg = msg + k + ":剩余" + remainingTime + "天.\r\n"
+		}
+		logs.Info(msg)
+		notification.SendMsg(msg)
 	}
-	logs.Info(msg)
-	notification.SendMsg(msg)
+
 	return nil
 }
 
@@ -71,6 +75,7 @@ func refreshRemainingTime() error {
 }
 
 func Run() {
+	logs.Info("Run...")
 	notifications := toolbox.NewTask("notification", "0 0 21 * * *", notificationEveryDay)
 	refreshRemaining := toolbox.NewTask("refreshRemaining", "1 0 0 * * *", refreshRemainingTime)
 
